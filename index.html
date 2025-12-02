@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Idea to Insight: AI-Enabled Data Engineering</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Analytical Warmth -->
+    <!-- 
+        Background: Warm Slate/Stone (#fafaf9)
+        Text: Deep Charcoal (#1c1917)
+        Accents: 
+            - Dirty/Warning: Burnt Orange (#ea580c)
+            - Clean/Success: Emerald Green (#059669)
+            - Tech/AI: Indigo (#4f46e5)
+            - Structural: Stone Gray (#57534e)
+    -->
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            800: '#292524',
+                            900: '#1c1917',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Application Structure Plan:
+           1. Access Gate: Simple password protection for the event.
+           2. Hero Section: Sets the context (The Dirty Data Dilemma).
+           3. The Swamp: Hands-on raw data inspection.
+           4. The Pipeline: Interactive Clean -> Model -> Secure.
+           5. The AI Hack: Simulation of the prompt AND Code Generation.
+           6. Scale & Intelligence: Visualization of volume.
+           7. Toolkit: Actionable next steps.
+        */
+
+        /* CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. */
+
+        body {
+            background-color: #fafaf9; /* Stone-50 */
+            color: #1c1917;
+        }
+
+        /* Access Gate Styles */
+        #access-gate {
+            position: fixed;
+            inset: 0;
+            background-color: #1c1917;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        /* Chart Container Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .step-active {
+            background-color: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+        .step-inactive {
+            background-color: white;
+            color: #57534e;
+            border-color: #d6d3d1;
+        }
+        
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .data-table th {
+            background-color: #e7e5e4;
+            text-align: left;
+            padding: 0.5rem;
+            font-weight: 600;
+            border-bottom: 2px solid #d6d3d1;
+        }
+        .data-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #e7e5e4;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Highlights */
+        .highlight-dirty {
+            background-color: #fed7aa; /* Orange-200 */
+            color: #9a3412;
+            font-weight: bold;
+        }
+        .highlight-clean {
+            background-color: #a7f3d0; /* Emerald-200 */
+            color: #065f46;
+            font-weight: bold;
+        }
+        .highlight-secure {
+            background-color: #e9d5ff; /* Purple-200 */
+            color: #6b21a8;
+        }
+
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased overflow-hidden" id="main-body">
+
+    <!-- ACCESS GATE -->
+    <div id="access-gate">
+        <div class="text-center p-8 max-w-md w-full">
+            <div class="text-6xl mb-6">🔒</div>
+            <h1 class="text-2xl font-bold mb-2">Melrose Career Day Lab</h1>
+            <p class="text-stone-400 mb-6">Please enter the access code provided in class.</p>
+            
+            <form onsubmit="checkAccess(event)" class="flex flex-col gap-4">
+                <input type="password" id="access-code" placeholder="Enter Access Code" 
+                    class="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-white focus:outline-none focus:border-indigo-500 text-center text-lg tracking-widest">
+                <button type="submit" 
+                    class="w-full px-4 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">
+                    Unlock Lab
+                </button>
+            </form>
+            <p id="error-msg" class="text-red-500 mt-4 hidden">Incorrect code. Try "MHS2025"</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT (Initially Hidden behind Gate) -->
+    
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glass-panel border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🏗️</span>
+                    <span class="font-bold text-lg sm:text-xl tracking-tight text-stone-800">Melrose Career Day <span class="text-indigo-600">Data Eng Lab</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="scrollToSection('swamp')" class="text-stone-600 hover:text-indigo-600 font-medium transition">The Swamp</button>
+                    <button onclick="scrollToSection('pipeline')" class="text-stone-600 hover:text-indigo-600 font-medium transition">The Pipeline</button>
+                    <button onclick="scrollToSection('ai-hack')" class="text-stone-600 hover:text-indigo-600 font-medium transition">AI Hack</button>
+                    <button onclick="scrollToSection('scale')" class="text-stone-600 hover:text-indigo-600 font-medium transition">Scale</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-white border-b border-stone-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
+            <h1 class="text-4xl sm:text-6xl font-bold text-stone-900 mb-6 tracking-tight">
+                From Idea to <span class="text-indigo-600">Insight</span>
+            </h1>
+            <p class="text-xl text-stone-600 max-w-3xl mx-auto mb-8 leading-relaxed">
+                Welcome to the world of <strong>AI-Enabled Data Engineering</strong>. Real-world data is a swamp of typos and secrets. Your job? Build the bridges that turn chaos into reliable truth.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="scrollToSection('swamp')" class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition transform hover:-translate-y-0.5">
+                    Enter the Swamp
+                </button>
+                <div class="flex gap-4 justify-center">
+                    <a href="https://docs.google.com/document/d/1-rne32BEgMwQPGJLGxYf_rYZ4uti_2HpxDsNJrGANLE/edit?usp=sharing" target="_blank" class="px-6 py-3 bg-white text-indigo-600 border border-indigo-200 font-semibold rounded-lg hover:bg-indigo-50 transition">
+                        📄 Class Handout
+                    </a>
+                    <a href="https://docs.google.com/presentation/d/1YdE7d2qGjIED8qNdZ7P-qkzYJXFq9YmbDdJU4ndMXIU/edit?usp=sharing" target="_blank" class="px-6 py-3 bg-white text-indigo-600 border border-indigo-200 font-semibold rounded-lg hover:bg-indigo-50 transition">
+                        📊 Presentation Slides
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Section 1: The Swamp (Problem) -->
+    <section id="swamp" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-10">
+            <h2 class="text-3xl font-bold text-stone-900 mb-4">1. The Dirty Data Dilemma</h2>
+            <p class="text-lg text-stone-600 max-w-4xl">
+                Before we can use AI or analytics, we must face the raw data stream. This is what data looks like "on the wire." It contains <strong>Quality Issues</strong> (typos), <strong>Format Problems</strong> (inconsistent units), and <strong>Privacy Risks</strong> (exposed emails).
+            </p>
+            <p class="mt-2 text-indigo-600 font-medium">👉 Interaction: Hover over the table rows to inspect the data. Click "Audit Data" to reveal the hidden errors.</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+            <div class="p-4 bg-stone-50 border-b border-stone-200 flex justify-between items-center">
+                <span class="font-mono text-sm text-stone-500">source: raw_stream_log.csv</span>
+                <button id="audit-btn" class="px-4 py-2 bg-orange-500 text-white text-sm font-bold rounded hover:bg-orange-600 transition shadow-sm">
+                    ⚠️ Audit Data
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table" id="raw-table">
+                    <thead>
+                        <tr>
+                            <th>SRC_SYS</th>
+                            <th>USER_ID</th>
+                            <th>EMAIL (PII)</th>
+                            <th>ARTIST</th>
+                            <th>DURATION</th>
+                            <th>DEVICE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="audit-summary" class="hidden p-4 bg-orange-50 border-t border-orange-100 text-orange-800 text-sm">
+                <strong>Audit Findings:</strong> Found 1 Typo ("Luminers"), 1 Format Error ("21:00"), and 3 Exposed Emails (PII Risk).
+                <div class="mt-2 pt-2 border-t border-orange-200 text-xs text-orange-700">
+                    <strong>Tech Note:</strong> In class, we find these with our eyes. In the real world, you'd find these using <strong>Python/Pandas</strong> scripts. For massive industrial scale (billions of rows), we use platforms like <a href="https://www.abinitio.com/en/" target="_blank" class="underline hover:text-orange-900">Ab Initio</a>.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: The Pipeline (Solution) -->
+    <section id="pipeline" class="py-16 bg-stone-100 border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-10">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">2. The Engineering Pipeline</h2>
+                <p class="text-lg text-stone-600 max-w-4xl">
+                    Data Engineers build automated factories called <strong>Pipelines</strong>. We take the raw input and pass it through three critical stages: <strong>Cleanse</strong>, <strong>Model</strong>, and <strong>Secure</strong>.
+                </p>
+                <p class="mt-2 text-indigo-600 font-medium">👉 Interaction: Click the pipeline steps below to run the transformation engine.</p>
+            </div>
+
+            <!-- Pipeline Controls -->
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4 mb-12">
+                <div class="flex items-center w-full md:w-auto">
+                    <button onclick="setPipelineStage('cleanse')" id="btn-cleanse" class="w-full md:w-48 py-4 px-6 rounded-xl border-2 font-bold text-lg transition flex flex-col items-center gap-2 step-inactive hover:border-indigo-300">
+                        <span>🧹 Cleanse</span>
+                        <span class="text-xs font-normal opacity-70">Fix Quality & Formats</span>
+                    </button>
+                    <div class="hidden md:block w-12 h-1 bg-stone-300 mx-2"></div>
+                </div>
+                
+                <div class="flex items-center w-full md:w-auto">
+                    <button onclick="setPipelineStage('model')" id="btn-model" class="w-full md:w-48 py-4 px-6 rounded-xl border-2 font-bold text-lg transition flex flex-col items-center gap-2 step-inactive hover:border-indigo-300">
+                        <span>📐 Model</span>
+                        <span class="text-xs font-normal opacity-70">Structure into Schema</span>
+                    </button>
+                    <div class="hidden md:block w-12 h-1 bg-stone-300 mx-2"></div>
+                </div>
+
+                <div class="flex items-center w-full md:w-auto">
+                    <button onclick="setPipelineStage('secure')" id="btn-secure" class="w-full md:w-48 py-4 px-6 rounded-xl border-2 font-bold text-lg transition flex flex-col items-center gap-2 step-inactive hover:border-indigo-300">
+                        <span>🔒 Secure</span>
+                        <span class="text-xs font-normal opacity-70">Tokenize PII</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pipeline Output Display -->
+            <div id="pipeline-display" class="bg-white rounded-xl shadow-lg border border-stone-200 min-h-[400px] p-6 relative transition-all duration-500">
+                <!-- Content injected via JS -->
+                <div class="absolute inset-0 flex items-center justify-center text-stone-400">
+                    Select a pipeline stage to process data...
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: The AI Hack -->
+    <section id="ai-hack" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div>
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">3. The AI "Hack": Alignment & Code Generation</h2>
+                <p class="text-lg text-stone-600 mb-6">
+                    In 2025, we don't fix 15 billion rows by hand. We use <strong>Engineering Prompts</strong> to align AI tools to <em>write the code</em> that does the work.
+                </p>
+                <p class="text-md text-stone-500 mb-6">
+                    <strong class="text-indigo-600">The Pro Move:</strong> Instead of saying "Fix this data", we say "Write me a high-performance Python script to fix this data." This code can then run on massive servers at low cost.
+                </p>
+                <div class="bg-indigo-50 border border-indigo-100 p-6 rounded-xl">
+                    <h3 class="font-bold text-indigo-900 mb-2">The Winning Prompt</h3>
+                    <p class="text-sm text-indigo-800 italic mb-4">"Act as a Senior Data Engineer. Write a robust Python function to cleanse artist names, normalize duration to seconds, and SHA-256 hash email addresses."</p>
+                    <button onclick="runAISimulation()" id="run-ai-btn" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition flex justify-center items-center gap-2">
+                        <span>▶️ Generate Engineering Code</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Terminal UI -->
+            <div class="code-block p-4 shadow-2xl flex flex-col h-[400px]">
+                <div class="flex gap-2 mb-4 border-b border-gray-700 pb-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span class="ml-2 text-xs text-gray-500">ai_agent_v4.0 --terminal</span>
+                </div>
+                <div id="terminal-content" class="flex-grow overflow-y-auto text-sm font-mono leading-relaxed p-2">
+                    <span class="text-green-400">user@mhs:~$</span> <span class="text-gray-400">Waiting for input...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Scale & Intelligence -->
+    <section id="scale" class="py-16 bg-stone-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-10 text-center">
+                <h2 class="text-3xl font-bold mb-4">4. Enterprise Intelligence at Scale</h2>
+                <p class="text-lg text-stone-400 max-w-3xl mx-auto">
+                    Solving for 15 rows is a puzzle. Solving for <strong>15 Billion rows</strong> is Engineering. Platforms like <strong>Ab Initio</strong> automate these logic chains to run in milliseconds, enabling AI agents to query massive datasets reliably.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                     <!-- Chart Container -->
+                     <div class="chart-container bg-stone-800 rounded-xl p-4 border border-stone-700">
+                        <canvas id="scaleChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-stone-800 p-6 rounded-xl border border-stone-700">
+                        <div class="text-2xl mb-2">🚀 Speed</div>
+                        <p class="text-stone-400">Manual cleaning takes hours. Engineered pipelines process petabytes in real-time using industrial tools like Ab Initio.</p>
+                    </div>
+                    <div class="bg-stone-800 p-6 rounded-xl border border-stone-700">
+                        <div class="text-2xl mb-2">🏷️ Semantic Labels</div>
+                        <p class="text-stone-400">We tag data with meaning (e.g., "[Artist Entity]"), so AI agents know exactly where to look, eliminating hallucinations.</p>
+                    </div>
+                    <div class="bg-stone-800 p-6 rounded-xl border border-stone-700">
+                        <div class="text-2xl mb-2">🛡️ Zero Trust Security</div>
+                        <p class="text-stone-400">Privacy is automated. PII is tokenized before it ever reaches the analytics layer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Toolkit -->
+    <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-stone-900 mb-8 text-center">Your Engineering Toolkit</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:shadow-md transition">
+                <div class="text-4xl mb-4">🐍</div>
+                <h3 class="text-xl font-bold mb-2">Python & Pandas</h3>
+                <p class="text-stone-600">The industry standard for code-based data manipulation. It's like Excel on steroids.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:shadow-md transition">
+                <div class="text-4xl mb-4">🏭</div>
+                <h3 class="text-xl font-bold mb-2">Industrial Platforms</h3>
+                <p class="text-stone-600">For global scale, we use <a href="https://www.abinitio.com/en/" class="text-indigo-600 font-bold hover:underline">Ab Initio</a> to manage dataflow.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:shadow-md transition">
+                <div class="text-4xl mb-4">🤖</div>
+                <h3 class="text-xl font-bold mb-2">Prompt Engineering</h3>
+                <p class="text-stone-600">Learning to align AI tools. Focus on Role, Task, and Output definition.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bio Section -->
+    <section class="py-16 bg-white border-t border-stone-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold text-stone-900 mb-4">About the Author</h2>
+                    <p class="text-stone-600 mb-4 leading-relaxed">
+                        This guide was co-authored by <strong>Ted Bach</strong> and <strong>Gemini Pro</strong>. Ted is a Coach of Meta-Driven Applications at <a href="https://www.abinitio.com/en/" target="_blank" class="text-indigo-600 font-medium hover:underline">Ab Initio Software</a>, where he works on making sophisticated computation accessible to everyone.
+                    </p>
+                    <p class="text-stone-600 mb-4 leading-relaxed">
+                        <strong>Career Journey:</strong> From painting bathroom stalls to writing simulation software at <a href="https://www.sunpowerinc.com/" target="_blank" class="text-indigo-600 font-medium hover:underline">SunPower</a>, getting a Ph.D. in Computer Engineering at Boston University, and spending 20+ years building enterprise systems.
+                    </p>
+                    <div class="bg-stone-50 p-4 rounded-lg border border-stone-200 mb-6">
+                        <h3 class="font-bold text-stone-800 mb-2 text-sm uppercase tracking-wide">Select Publications & Patents</h3>
+                        <ul class="text-sm text-stone-600 space-y-2 list-disc list-inside">
+                            <li><strong>Thesis (2005):</strong> <em>SIMP/STEP: A Platform for the Study of Cellular Automata and Lattice Gas Automata</em>, Boston University.</li>
+                            <li><strong>Patents:</strong> Holder of multiple US Patents related to parallel processing and graph execution, including <em>System and method for checkpointing a computation</em> (US 9,251,196) and <em>Managing execution of a graph of process stages</em>.</li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 flex flex-wrap gap-4">
+                        <a href="https://www.linkedin.com/in/ted-bach-1a675a1" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <span class="mr-2">in</span> Connect on LinkedIn
+                        </a>
+                        <span class="inline-flex items-center px-4 py-2 bg-stone-100 text-stone-700 rounded-lg">
+                            👋 Chat with me about Engineering, Science, or Complex Systems!
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-stone-100 border-t border-stone-200 py-12 text-center">
+        <p class="text-stone-500 text-sm">Created for Melrose High School Career Day.</p>
+        <p class="text-stone-400 text-xs mt-2">© 2025 Data Eng Lab</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Access Gate Logic ---
+        function checkAccess(event) {
+            event.preventDefault();
+            const input = document.getElementById('access-code');
+            const errorMsg = document.getElementById('error-msg');
+            
+            // Simple check (case insensitive)
+            if (input.value.trim().toUpperCase() === 'MHS2025') {
+                document.getElementById('access-gate').style.display = 'none';
+                document.getElementById('main-body').classList.remove('overflow-hidden');
+            } else {
+                errorMsg.classList.remove('hidden');
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        // Data Storage
+        const rawData = [
+            { sys: 'YouTube', id: 'U19832', email: 'user123@gmail.com', artist: 'The Lumineers', dur: '245', dev: 'iPhone 14' },
+            { sys: 'Spotify', id: 'U30901', email: 'user789@velsera.com', artist: 'Taylor Swift', dur: '200', dev: 'Chrome' },
+            { sys: 'SoundCloud', id: 'U55102', email: 'dave_m@yahoo.com', artist: 'Luminers', dur: '162', dev: 'Firefox' }, // Typo
+            { sys: 'Apple', id: 'U44567', email: 'user456@gmail.com', artist: 'Sun Ra', dur: '21:00', dev: 'MacBook' }, // Format Error
+            { sys: 'TikTok', id: 'U88123', email: 'student1@mhs.edu', artist: 'The Weeknd', dur: '200', dev: 'Pixel 7' }
+        ];
+
+        // --- Swamp Section Logic ---
+        function renderSwamp() {
+            const tbody = document.querySelector('#raw-table tbody');
+            tbody.innerHTML = '';
+            rawData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-stone-50 transition duration-150 cursor-default";
+                tr.innerHTML = `
+                    <td>${row.sys}</td>
+                    <td>${row.id}</td>
+                    <td class="cell-email transition-all duration-300">${row.email}</td>
+                    <td class="cell-artist transition-all duration-300">${row.artist}</td>
+                    <td class="cell-dur transition-all duration-300">${row.dur}</td>
+                    <td>${row.dev}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('audit-btn').addEventListener('click', () => {
+            // Highlight logic
+            const artists = document.querySelectorAll('.cell-artist');
+            artists[2].classList.add('highlight-dirty'); // Luminers
+
+            const durations = document.querySelectorAll('.cell-dur');
+            durations[3].classList.add('highlight-dirty'); // 21:00
+
+            const emails = document.querySelectorAll('.cell-email');
+            emails.forEach(e => e.classList.add('highlight-dirty')); // All emails are PII risk
+
+            document.getElementById('audit-summary').classList.remove('hidden');
+        });
+
+        // --- Pipeline Logic ---
+        function setPipelineStage(stage) {
+            // UI State
+            const btns = ['cleanse', 'model', 'secure'];
+            btns.forEach(b => {
+                const el = document.getElementById(`btn-${b}`);
+                if(b === stage) {
+                    el.classList.remove('step-inactive');
+                    el.classList.add('step-active');
+                } else {
+                    el.classList.add('step-inactive');
+                    el.classList.remove('step-active');
+                }
+            });
+
+            const display = document.getElementById('pipeline-display');
+            display.style.opacity = '0';
+            
+            setTimeout(() => {
+                display.style.opacity = '1';
+                if (stage === 'cleanse') {
+                    display.innerHTML = `
+                        <div class="mb-4 flex items-center gap-2 text-emerald-700 bg-emerald-50 p-3 rounded-lg">
+                            <span>✅</span> <strong>Cleanse Applied:</strong> Typo correction ('Luminers' -> 'The Lumineers') & Duration Normalization (Seconds).
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead><tr><th>ID</th><th>ARTIST</th><th>DURATION (SEC)</th></tr></thead>
+                                <tbody>
+                                    <tr><td>U55102</td><td class="highlight-clean">The Lumineers</td><td>162</td></tr>
+                                    <tr><td>U44567</td><td>Sun Ra</td><td class="highlight-clean">1260</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else if (stage === 'model') {
+                    display.innerHTML = `
+                        <div class="mb-4 flex items-center gap-2 text-indigo-700 bg-indigo-50 p-3 rounded-lg">
+                            <span>📐</span> <strong>Star Schema Applied:</strong> Data split into 'Songs' (Catalog) and 'Play Events' (Transactions) for efficiency.
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border border-stone-200 rounded p-3">
+                                <h4 class="font-bold text-sm mb-2 text-stone-500">Table: SONGS (Unique)</h4>
+                                <table class="data-table">
+                                    <thead><tr><th>S_ID</th><th>ARTIST</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>S_01</td><td>The Lumineers</td></tr>
+                                        <tr><td>S_02</td><td>Sun Ra</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="border border-stone-200 rounded p-3">
+                                <h4 class="font-bold text-sm mb-2 text-stone-500">Table: EVENTS (Log)</h4>
+                                <table class="data-table">
+                                    <thead><tr><th>TIME</th><th>USER</th><th>S_ID</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>09:45</td><td>U55102</td><td>S_01</td></tr>
+                                        <tr><td>09:40</td><td>U44567</td><td>S_02</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                } else if (stage === 'secure') {
+                    display.innerHTML = `
+                        <div class="mb-4 flex items-center gap-2 text-purple-700 bg-purple-50 p-3 rounded-lg">
+                            <span>🔒</span> <strong>Security Applied:</strong> PII (Emails) replaced with irreversible SHA-256 tokens.
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead><tr><th>USER_ID</th><th>SECURE_TOKEN</th><th>SOURCE</th></tr></thead>
+                                <tbody>
+                                    <tr><td>U19832</td><td class="highlight-secure font-mono text-xs">tok_8a7b9c</td><td>YouTube</td></tr>
+                                    <tr><td>U44567</td><td class="highlight-secure font-mono text-xs">tok_9m8n7o</td><td>Apple</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+            }, 200);
+        }
+
+        // --- AI Simulation Logic ---
+        function runAISimulation() {
+            const terminal = document.getElementById('terminal-content');
+            const btn = document.getElementById('run-ai-btn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            terminal.innerHTML = '<span class="text-green-400">user@mhs:~$</span> ./gen_pipeline_code.py<br>';
+            
+            const steps = [
+                { text: "> Loading Context (Schema, Data Samples)...", delay: 500, color: "text-blue-400" },
+                { text: "> Generating Python Logic...", delay: 1200, color: "text-blue-400" },
+                { text: "> Writing `cleanse_artist(name)` function...", delay: 1800, color: "text-yellow-400" },
+                { text: "> Writing `secure_hash(email)` function...", delay: 2400, color: "text-yellow-400" },
+                { text: "--------------------------------------------------", delay: 2800, color: "text-gray-500" },
+                { text: "<span class='text-purple-400'>def</span> <span class='text-yellow-200'>cleanse_data</span>(df):", delay: 3000, color: "text-white ml-2" },
+                { text: "&nbsp;&nbsp;df['artist'] = df['artist'].replace(...) <span class='text-gray-500'># AI Logic</span>", delay: 3200, color: "text-white ml-2" },
+                { text: "&nbsp;&nbsp;df['email_tok'] = df['email'].apply(sha256) <span class='text-gray-500'># AI Logic</span>", delay: 3400, color: "text-white ml-2" },
+                { text: "&nbsp;&nbsp;<span class='text-purple-400'>return</span> df", delay: 3600, color: "text-white ml-2" },
+                { text: "--------------------------------------------------", delay: 3800, color: "text-gray-500" },
+                { text: "Code Generated Successfully.", delay: 4200, color: "text-green-500 font-bold" }
+            ];
+
+            let cumulativeTime = 0;
+
+            steps.forEach(step => {
+                setTimeout(() => {
+                    terminal.innerHTML += `<div class="${step.color}">${step.text}</div>`;
+                    terminal.scrollTop = terminal.scrollHeight;
+                }, cumulativeTime + step.delay);
+            });
+
+            setTimeout(() => {
+                terminal.innerHTML += `<div class="mt-4 border-t border-gray-700 pt-2 text-xs text-gray-400">
+                    <span class="cursor-blink">_</span>
+                </div>`;
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }, 5000);
+        }
+
+        // --- Scroll Logic ---
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- Chart.js Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSwamp();
+
+            const ctx = document.getElementById('scaleChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Day 1', 'Day 7', 'Day 30', 'Day 90', 'Day 365'],
+                    datasets: [{
+                        label: 'Data Volume (Rows Processed)',
+                        data: [15, 15000, 1500000, 450000000, 15000000000],
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#4f46e5',
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            grid: { color: '#44403c' },
+                            ticks: { 
+                                color: '#a8a29e',
+                                callback: function(value) {
+                                    if(value === 15) return '15 (Class)';
+                                    if(value === 15000000000) return '15 Billion (Enterprise)';
+                                    return Number(value).toExponential();
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#a8a29e' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#f5f5f4' } },
+                        tooltip: {
+                            backgroundColor: '#292524',
+                            titleColor: '#fff',
+                            bodyColor: '#d6d3d1',
+                            borderColor: '#57534e',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
